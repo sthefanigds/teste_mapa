@@ -1,0 +1,54 @@
+ap('map', 'Brazil', fill=TRUE, col='gray90', bg='white', lwd=0.1)
+
+# Vetor com os nomes dos estados brasileiros
+estados <- c("Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal", 
+             "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", 
+             "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", 
+             "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", 
+             "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins")
+
+# Data frame com as coordenadas de latitude e longitude das capitais
+capitais <- data.frame(
+  estado = estados,
+  cidade = c("Rio Branco", "Maceió", "Macapá", "Manaus", "Salvador", "Fortaleza", 
+             "Brasília", "Vitória", "Goiânia", "São Luís", "Cuiabá", "Campo Grande", 
+             "Belo Horizonte", "Belém", "João Pessoa", "Curitiba", "Recife", "Teresina", 
+             "Rio de Janeiro", "Natal", "Porto Alegre", "Porto Velho", "Boa Vista", 
+             "Florianópolis", "São Paulo", "Aracaju", "Palmas"),
+  lat = c(-9.975377, -9.66599, 0.034934, -3.119028, -12.972176, -3.732714, 
+          -15.793889, -20.315982, -16.686891, -2.53073, -15.60141, -20.464681, 
+          -19.916681, -1.455825, -7.119496, -25.429015, -8.046449, -5.08917, 
+          -22.911014, -5.795446, -30.034647, -8.76194, 2.820892, -27.595377, 
+          -23.55052, -10.911221, -10.249091),
+  lon = c(-67.824897, -35.735283, -51.066039, -60.021731, -38.501688, -38.527453, 
+          -47.882778, -40.292303, -49.264791, -44.302977, -56.097891, -54.616669, 
+          -43.934493, -48.504673, -34.876964, -49.276782, -34.87711, -42.801946, 
+          -43.209373, -35.205753, -51.229216, -63.90381, -60.673326, -48.552778, 
+          -46.633309, -37.071152, -48.276535))
+
+# Instalar e carregar as bibliotecas necessárias para criar mapas
+install.packages("ggplot2")
+install.packages("rnaturalearth")
+library(rnaturalearth)
+library(ggplot2)
+# carregar o banco de dados do Brasil
+brasil <- ne_states(country = "brazil", returnclass = "sf")
+
+# lista todas as capitais do Brasil
+capitais <- data.frame(
+  estado = state.name,
+  cidade = tolower(state.capital),
+  stringsAsFactors = FALSE
+)
+# obter as coordenadas das capitais
+coords <- geom_point(paste(capitais$cidade, capitais$estado, "Brasil", sep = ","))
+
+# criar um novo data frame com as coordenadas das capitais
+capitais_estados <- cbind(capitais, estados)
+
+# criar um mapa com ggplot2
+ggplot() +
+  geom_sf(data = brasil) +
+  geom_sf_text(data = brasil, aes(label = name), size = 2, color = "black") +
+  geom_point(data = capitais_estados, aes(x = lon, y = lat), color = "red", size = 1) +
+  ggtitle("Mapa do Brasil com Destaque para as Capitais")
